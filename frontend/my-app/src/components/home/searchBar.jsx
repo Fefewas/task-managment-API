@@ -52,7 +52,7 @@ const SearchBar = ({ setTasks, fetchGetTasks }) => {
   return (
     <div>
       <form className="max-w-md" onSubmit={(e) => e.preventDefault()}>
-        <div className="relative w-[60vh] flex">
+        <div className="relative w-[30vh] flex">
           <div className="absolute inset-y-0 start-0 flex items-center text-xl ps-3 pointer-events-none">
             <CiSearch />
           </div>

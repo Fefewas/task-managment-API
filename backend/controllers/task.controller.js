@@ -1,7 +1,7 @@
 const { ObjectId } = require("mongodb");
 const handleError = require("../middlewares/handleError");
 const getColl = require("../middlewares/dbComunication");
-const validateTask = require("../validators/task.validators")
+const validateTask = require("../validators/task.validators");
 
 const getTasks = async (req, res) => {
   try {
@@ -63,7 +63,7 @@ const createTask = async (req, res) => {
       task.highlighted = false;
     }
     const result = await getColl("tasks").insertOne(task);
-    res.status(201).send(task);
+    res.status(201).json(result.ops[0]);
   } catch (err) {
     handleError(err, res);
   }
@@ -91,7 +91,7 @@ const deleteTask = async (req, res) => {
   try {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) {
-      return res.stauts(400).json({ error: "Invalid id" });
+      return res.status(400).json({ error: "Invalid id" });
     }
     const result = await getColl("tasks").deleteOne({ _id: new ObjectId(id) });
     res.status(202).send("Succesfully removed");

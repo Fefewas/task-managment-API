@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import InputData from "../components/home/InputData";
 import axios from "axios";
 import StatusRowsContainer from "../components/home/statusRowsContainer";
 import Highlight from "../components/home/highlight";
 import SearchBar from "../components/home/searchBar";
+import { AuthContext } from "../context/authContext";
 
 const baseURL = "http://localhost:7000/tasks";
 const headers = { id: localStorage.getItem("id") };
 
 const AllTasks = (status) => {
   const [InputDiv, setInputDiv] = useState("hidden");
-
+  const [userInfo, setUserInfo] = useState(null);
   const [UpdatedData, setUpdatedData] = useState({
     id: "",
     title: "",
@@ -19,9 +20,22 @@ const AllTasks = (status) => {
     status: "",
   });
   const [activeCard, setActiveCard] = useState(null);
-
   const [tasks, setTasks] = useState(null);
+  const { userID } = useContext(AuthContext);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:7000/users/${userID}`);
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error("Error fetching user information:", error);
+      }
+    };
 
+    if (userID) {
+      fetchUserInfo();
+    }
+  }, [userID]);
   const onDrop = async (status) => {
     try {
       await axios.patch(
@@ -52,13 +66,15 @@ const AllTasks = (status) => {
       <div className="w-full transition-all duration-400">
         <div className="w-full flex justify-between px-6 p-4 bg-gray-700 rounded-xl items-center">
           <SearchBar setTasks={setTasks} fetchGetTasks={fetchGetTasks} />
-          <button
-            className="rounded-xl flex hover:bg-gray-500 cursor-pointer transition-all duration-400 w-fit h-full px-4 py-2"
-            onClick={() => setInputDiv("fixed")}
-          >
-            <p className="text-2xl mx-10">Add task</p>
-            <FaPlus className="text-3xl" />
-          </button>
+          <div className="flex w-fit h-full px-4 py-2">
+            {userInfo ? (
+              <div>
+                <p>Welcome to you workspace, {userInfo.fullName}</p>
+              </div>
+            ) : (
+              <p>Loading user information...</p>
+            )}
+          </div>
         </div>
         <div className="m-3">
           <Highlight
